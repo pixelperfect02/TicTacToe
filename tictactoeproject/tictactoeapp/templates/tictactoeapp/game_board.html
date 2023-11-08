@@ -99,12 +99,33 @@
             }
 
             if (filledCells === 9) {
-            declareTie();
-            return;
+                declareTie();
+                return;
             }
 
             currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
             updateMessage(`Player ${currentPlayer}'s turn`);
+
+            // Computer's move
+            if (currentPlayer === 'O') {
+                setTimeout(makeComputerMove, 1000); // Delay computer move for 1 second
+            }
+        }
+
+        function makeComputerMove() {
+            if (gameEnded) {
+                return;
+            }
+
+            const emptyCells = document.querySelectorAll('td:not(.X):not(.O)');
+            if (emptyCells.length === 0) {
+                declareTie();
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * emptyCells.length);
+            const computerCell = emptyCells[randomIndex];
+            cellClicked(computerCell);
         }
 
         function checkWinner(symbol) {
@@ -140,9 +161,9 @@
         }
 
         function declareTie() {
-        gameEnded = true;
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = "It's a Tie!";
+            gameEnded = true;
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = "It's a Tie!";
         }
 
         function updateMessage(message) {
