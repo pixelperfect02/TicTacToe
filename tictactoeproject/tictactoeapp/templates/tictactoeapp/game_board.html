@@ -7,7 +7,7 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f0f0f0; /* Background color for the whole page */
+            background-color: lightgreen; /* Background color for the whole page */
             margin: 0;
             padding: 0;
         }
@@ -53,12 +53,6 @@
 <body>
     <h1>Tic Tac Toe</h1>
     
-    <label for="symbol-select">Select Symbol:</label>
-    <select id="symbol-select">
-        <option value="X">X</option>
-        <option value="O">O</option>
-    </select>
-    
     <table>
         <tr>
             <td onclick="cellClicked(this)"></td>
@@ -82,49 +76,51 @@
     <script>
         let currentPlayer = 'X';
         let gameEnded = false;
-        const winningCombos = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
+        let filledCells = 0;
 
         function cellClicked(cell) {
             if (cell.textContent || gameEnded) {
                 return; // Cell already filled or game ended
             }
 
-            const symbolSelect = document.getElementById("symbol-select");
-            const selectedSymbol = symbolSelect.value;
+            cell.textContent = currentPlayer;
+            cell.classList.add(currentPlayer);
+            filledCells++;
 
-            cell.textContent = selectedSymbol;
-            cell.classList.add(selectedSymbol);
-
-            if (checkWinner(selectedSymbol)) {
-                declareWinner(selectedSymbol);
+            if (checkWinner(currentPlayer)) {
+                declareWinner(currentPlayer);
                 return;
             }
 
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            if (filledCells === 9) {
+            declareTie();
+            return;
+            }
 
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = `Player ${currentPlayer}'s turn`;
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            updateMessage(`Player ${currentPlayer}'s turn`);
         }
 
         function checkWinner(symbol) {
+            const cells = document.querySelectorAll('td');
+            const winningCombos = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
             for (const combo of winningCombos) {
-                if (
-                    document.getElementById(combo[0]).textContent === symbol &&
-                    document.getElementById(combo[1]).textContent === symbol &&
-                    document.getElementById(combo[2]).textContent === symbol
-                ) {
+                const [a, b, c] = combo;
+                if (cells[a].textContent === symbol && cells[b].textContent === symbol && cells[c].textContent === symbol) {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -132,11 +128,20 @@
             gameEnded = true;
             const messageDiv = document.getElementById('message');
             messageDiv.textContent = `Player ${symbol} wins!`;
-            for (const combo of winningCombos) {
-                for (const cellIndex of combo) {
-                    document.getElementById(cellIndex).classList.add('winner');
-                }
+            for (const cell of document.querySelectorAll('td')) {
+                cell.removeEventListener('click', cellClicked);
             }
+        }
+
+        function declareTie() {
+        gameEnded = true;
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = "It's a Tie!";
+        }
+
+        function updateMessage(message) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
         }
     </script>
 </body>
