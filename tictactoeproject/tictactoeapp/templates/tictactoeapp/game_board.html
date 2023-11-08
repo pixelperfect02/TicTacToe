@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0; /* Background color for the whole page */
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-size: 36px;
+            margin: 20px 0;
+            color: #333; /* Header text color */
+        }
+        table {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff; /* Background color for the board */
+            border: 5px solid black; /* Table border style */
+        }
+        td {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+            text-align: center;
+            vertical-align: middle;
+            border: 5px solid black; /* Cell border style */
+            background-color: #eee; /* Background color for each cell */
+            color: #333; /* Cell text color */
+            cursor: pointer;
+        }
+        td.X {
+            background-color: red; /* Background color for 'X' cells */
+        }
+        td.O {
+            background-color: yellow; /* Background color for 'O' cells */
+        }
+        td:hover {
+            background-color: #f0f0f0; /* Background color when hovering over a cell */
+        }
+        .winner {
+            background-color: green; /* Background color for winning cells */
+            color: white; /* Text color for winning cells */
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    
+    <label for="symbol-select">Select Symbol:</label>
+    <select id="symbol-select">
+        <option value="X">X</option>
+        <option value="O">O</option>
+    </select>
+    
+    <table>
+        <tr>
+            <td onclick="cellClicked(this)"></td>
+            <td onclick="cellClicked(this)"></td>
+            <td onclick="cellClicked(this)"></td>
+        </tr>
+        <tr>
+            <td onclick="cellClicked(this)"></td>
+            <td onclick="cellClicked(this)"></td>
+            <td onclick="cellClicked(this)"></td>
+        </tr>
+        <tr>
+            <td onclick="cellClicked(this)"></td>
+            <td onclick="cellClicked(this)"></td>
+            <td onclick="cellClicked(this)"></td>
+        </tr>
+    </table>
+
+    <div id="message"></div>
+
+    <script>
+        let currentPlayer = 'X';
+        let gameEnded = false;
+        const winningCombos = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        function cellClicked(cell) {
+            if (cell.textContent || gameEnded) {
+                return; // Cell already filled or game ended
+            }
+
+            const symbolSelect = document.getElementById("symbol-select");
+            const selectedSymbol = symbolSelect.value;
+
+            cell.textContent = selectedSymbol;
+            cell.classList.add(selectedSymbol);
+
+            if (checkWinner(selectedSymbol)) {
+                declareWinner(selectedSymbol);
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        function checkWinner(symbol) {
+            for (const combo of winningCombos) {
+                if (
+                    document.getElementById(combo[0]).textContent === symbol &&
+                    document.getElementById(combo[1]).textContent === symbol &&
+                    document.getElementById(combo[2]).textContent === symbol
+                ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function declareWinner(symbol) {
+            gameEnded = true;
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = `Player ${symbol} wins!`;
+            for (const combo of winningCombos) {
+                for (const cellIndex of combo) {
+                    document.getElementById(cellIndex).classList.add('winner');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
